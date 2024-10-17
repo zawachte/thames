@@ -2,18 +2,17 @@ use std::fs::File;
 use std::io::Write;
 use std::io;
 use tokio::task;
-
 use clap::Parser;
 
 /// A multi-part downloader.
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// Name of the person to greet
+    /// Target URL to download
     #[arg(short, long)]
     url: String,
 
-    /// Number of times to greet
+    /// Number of parts/threads to use for the download
     #[arg(short, long, default_value_t = 10)]
     parts: u8,
 }
@@ -54,8 +53,7 @@ async fn download(
     link: String,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut handles = vec![];
-    for i in 0..number_of_parts {
-        
+    for i in 0..number_of_parts {        
         let marker = i as i32;
         let start = marker * part_size;
         let end = (marker + 1) * part_size - 1;
